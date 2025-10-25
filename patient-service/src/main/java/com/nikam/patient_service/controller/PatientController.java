@@ -1,11 +1,13 @@
 package com.nikam.patient_service.controller;
 
-import com.nikam.patient_service.dto.PatientDTO;
+import com.nikam.patient_service.dto.PatientRequestDto;
+import com.nikam.patient_service.dto.PatientResponseDto;
 import com.nikam.patient_service.service.PatientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,7 +19,12 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/get-all-patient")
-    public List<PatientDTO> getAllPatient(){
-        return this.patientService.getAllPatient();
+    public ResponseEntity<List<PatientResponseDto>> getAllPatient(){
+        return ResponseEntity.ok().body(this.patientService.getAllPatient());
+    }
+
+    @PostMapping("/create-patient")
+    public ResponseEntity<PatientResponseDto> createNewPatient(@Valid @RequestBody PatientRequestDto patientRequestDto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.patientService.createNewPatient(patientRequestDto));
     }
 }
