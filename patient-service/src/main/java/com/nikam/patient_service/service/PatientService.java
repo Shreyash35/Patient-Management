@@ -43,10 +43,8 @@ public class PatientService {
     }
 
     public PatientResponseDto updatePatient(UUID id, PatientRequestDto patientRequestDto){
-        Patient patient = this.patientRepository.findById(id).orElse(null);
-        if (patient == null){
-            throw new NoPatientFoundException("There is no such a patient having patient id " + id);
-        }
+        Patient patient = this.patientRepository.findById(id).orElseThrow(() ->
+                new NoPatientFoundException("There is no such a patient having patient id " + id));
 
         if (this.patientRepository.existsByEmailAndIdNot(patientRequestDto.getEmail(), id)){
             throw new EmailAlreadyExistException(patientRequestDto.getEmail() + " email already exists in database");
@@ -60,5 +58,9 @@ public class PatientService {
 
         this.patientRepository.save(patient);
         return PatientMapper.toDto(patient);
+    }
+
+    public void deletePatient(UUID id){
+        this.patientRepository.deleteById(id);
     }
 }

@@ -38,4 +38,10 @@ public class PatientController {
                                                             @Validated({Default.class}) @RequestBody PatientRequestDto patientRequestDto){
         return ResponseEntity.status(HttpStatus.OK).body(this.patientService.updatePatient(id, patientRequestDto));
     }
+
+    @DeleteMapping("/patient-delete/{id}")
+    public ResponseEntity<Void> deletePatient(@PathVariable UUID id){
+        this.patientService.deletePatient(id);
+        return ResponseEntity.noContent().build();
+    }
 }
