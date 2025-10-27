@@ -1,5 +1,6 @@
 package com.nikam.patient_service.dto;
 
+import com.nikam.patient_service.dto.validations.CreatePatientValidationGroup;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -23,6 +24,6 @@ public class PatientRequestDto {
     @NotBlank(message = "Date of Birth cannot be blank")
     private String dateOfBirth;
 
-    @NotBlank(message = "Register Date cannot be blank")
+    @NotBlank(groups = CreatePatientValidationGroup.class, message = "Register Date cannot be blank")
     private String registerDate;
 }

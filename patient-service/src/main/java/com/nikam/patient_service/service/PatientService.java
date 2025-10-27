@@ -3,13 +3,16 @@ package com.nikam.patient_service.service;
 import com.nikam.patient_service.dto.PatientRequestDto;
 import com.nikam.patient_service.dto.PatientResponseDto;
 import com.nikam.patient_service.exceptions.EmailAlreadyExistException;
+import com.nikam.patient_service.exceptions.NoPatientFoundException;
 import com.nikam.patient_service.mappers.PatientMapper;
 import com.nikam.patient_service.model.Patient;
 import com.nikam.patient_service.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,26 @@ public class PatientService {
         }
 
         Patient patient = PatientMapper.toModel(patientRequestDto);
+        this.patientRepository.save(patient);
+        return PatientMapper.toDto(patient);
+    }
+
+    public PatientResponseDto updatePatient(UUID id, PatientRequestDto patientRequestDto){
+        Patient patient = this.patientRepository.findById(id).orElse(null);
+        if (patient == null){
+            throw new NoPatientFoundException("There is no such a patient having patient id " + id);
+        }
+
+        if (this.patientRepository.existsByEmailAndIdNot(patientRequestDto.getEmail(), id)){
+            throw new EmailAlreadyExistException(patientRequestDto.getEmail() + " email already exists in database");
+        }
+
+        patient.setId(id);
+        patient.setName(patientRequestDto.getName());
+        patient.setEmail(patientRequestDto.getEmail());
+        patient.setAddress(patientRequestDto.getAddress());
+        patient.setDateOfBirth(LocalDate.parse(patientRequestDto.getDateOfBirth()));
+
         this.patientRepository.save(patient);
         return PatientMapper.toDto(patient);
     }
