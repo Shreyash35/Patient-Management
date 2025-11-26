@@ -4,6 +4,7 @@ import com.nikam.patient_service.dto.PatientRequestDto;
 import com.nikam.patient_service.dto.PatientResponseDto;
 import com.nikam.patient_service.exceptions.EmailAlreadyExistException;
 import com.nikam.patient_service.exceptions.NoPatientFoundException;
+import com.nikam.patient_service.grpc.BillingServiceGrpcClient;
 import com.nikam.patient_service.mappers.PatientMapper;
 import com.nikam.patient_service.model.Patient;
 import com.nikam.patient_service.repository.PatientRepository;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class PatientService {
 
     private final PatientRepository patientRepository;
+    private final BillingServiceGrpcClient billingService;
 
     public List<PatientResponseDto> getAllPatient(){
         var allPatient = this.patientRepository.findAll();
@@ -39,6 +41,7 @@ public class PatientService {
 
         Patient patient = PatientMapper.toModel(patientRequestDto);
         this.patientRepository.save(patient);
+        this.billingService.createBillingAccount(patient.getId().toString(), patient.getName(), patient.getEmail());
         return PatientMapper.toDto(patient);
     }
 
